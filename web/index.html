@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Estação IoT - Grupo 5</title>
+
+    <link rel="stylesheet" href="index.css">
+
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"
+        type="text/javascript">
+    </script>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">
+            <span>●</span> IoT Monitor
+        </div>
+
+        <nav>
+            <button class="nav-btn active" onclick="mostrarPagina('sobre')">
+                Sobre o Projeto
+            </button>
+
+            <button class="nav-btn" onclick="mostrarPagina('dashboard')">
+                Dashboard Ao Vivo
+            </button>
+        </nav>
+    </header>
+
+
+    <main>
+
+        <!-- SOBRE -->
+        <section id="sobre" class="pagina ativa">
+
+            <div class="hero">
+                <div class="hero-text">
+                    <span class="tag">PROJETO IoT • GRUPO 5</span>
+
+                    <h1>
+                        Estação de<br>
+                        <strong>Monitoramento IoT</strong>
+                    </h1>
+
+                    <p>
+                        Um sistema desenvolvido com ESP32 para monitorar
+                        temperatura, umidade e qualidade do ar em tempo real.
+                    </p>
+
+                    <button class="primary-btn" onclick="mostrarPagina('dashboard')">
+                        Ver Dashboard →
+                    </button>
+                </div>
+
+                <div class="hero-card">
+                    <div class="pulse"></div>
+                    <span>● SISTEMA ONLINE</span>
+                    <h2>ESP32</h2>
+                    <p>Monitoramento em tempo real</p>
+                </div>
+            </div>
+
+
+            <div class="section-title">
+                <span>01</span>
+                <h2>Sobre o projeto</h2>
+            </div>
+
+            <div class="info-grid">
+
+                <article class="info-card">
+                    <div class="icon">🎯</div>
+                    <h3>Objetivo</h3>
+                    <p>
+                        Criar uma estação capaz de coletar dados do ambiente
+                        e enviá-los em tempo real para um dashboard web.
+                    </p>
+                </article>
+
+                <article class="info-card">
+                    <div class="icon">⚙️</div>
+                    <h3>Hardware</h3>
+                    <p>
+                        ESP32, sensor DHT11, sensor MQ-135 e LEDs para
+                        indicação de situações de alerta.
+                    </p>
+                </article>
+
+                <article class="info-card">
+                    <div class="icon">📡</div>
+                    <h3>Comunicação</h3>
+                    <p>
+                        Os dados são enviados através do protocolo MQTT
+                        utilizando o broker Mosquitto.
+                    </p>
+                </article>
+
+            </div>
+
+
+            <div class="section-title">
+                <span>02</span>
+                <h2>Como funciona</h2>
+            </div>
+
+            <div class="architecture">
+
+                <div class="architecture-item">
+                    <div class="number">01</div>
+                    <h3>Sensores</h3>
+                    <p>DHT11 e MQ-135 coletam os dados do ambiente.</p>
+                </div>
+
+                <div class="arrow">→</div>
+
+                <div class="architecture-item">
+                    <div class="number">02</div>
+                    <h3>ESP32</h3>
+                    <p>Processa as informações e envia os dados.</p>
+                </div>
+
+                <div class="arrow">→</div>
+
+                <div class="architecture-item">
+                    <div class="number">03</div>
+                    <h3>MQTT</h3>
+                    <p>O Mosquitto recebe e distribui as mensagens.</p>
+                </div>
+
+                <div class="arrow">→</div>
+
+                <div class="architecture-item">
+                    <div class="number">04</div>
+                    <h3>Dashboard</h3>
+                    <p>Os dados aparecem em tempo real no navegador.</p>
+                </div>
+
+            </div>
+
+
+            <div class="section-title">
+                <span>03</span>
+                <h2>Componentes utilizados</h2>
+            </div>
+
+            <div class="images-grid">
+
+                <article>
+                    <img src="imagens/esp32.jpeg" alt="ESP32">
+                    <h3>ESP32</h3>
+                    <p>Microcontrolador responsável pelo projeto.</p>
+                </article>
+
+                <article>
+                    <img src="imagens/sensores.jpeg" alt="Montagem dos sensores">
+                    <h3>Sensores</h3>
+                    <p>DHT11 e MQ-135 utilizados na coleta de dados.</p>
+                </article>
+
+                <article>
+                    <img src="imagens/projeto.jpg" alt="Projeto funcionando">
+                    <h3>Projeto funcionando</h3>
+                    <p>Estação realizando o monitoramento.</p>
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- DASHBOARD -->
+        <section id="dashboard" class="pagina">
+
+            <div class="dashboard-header">
+
+                <div>
+                    <span class="tag">MONITORAMENTO EM TEMPO REAL</span>
+
+                    <h1>Dashboard <strong>Ao Vivo</strong></h1>
+
+                    <p>
+                        Dados recebidos diretamente do ESP32 através do MQTT.
+                    </p>
+                </div>
+
+                <div id="status" class="status disconnected">
+                    <span></span>
+                    Desconectado
+                </div>
+
+            </div>
+
+
+            <div class="sensor-grid">
+
+                <article class="sensor-card">
+
+                    <div class="sensor-top">
+                        <div class="sensor-icon temperature">🌡️</div>
+                        <span>AMBIENTE</span>
+                    </div>
+
+                    <h3>Temperatura</h3>
+
+                    <div class="sensor-value">
+                        <span id="temp">--</span>
+                        <small>°C</small>
+                    </div>
+
+                    <p id="temp-alert">Aguardando dados...</p>
+
+                </article>
+
+
+                <article class="sensor-card">
+
+                    <div class="sensor-top">
+                        <div class="sensor-icon humidity">💧</div>
+                        <span>AMBIENTE</span>
+                    </div>
+
+                    <h3>Umidade</h3>
+
+                    <div class="sensor-value">
+                        <span id="hum">--</span>
+                        <small>%</small>
+                    </div>
+
+                    <p id="hum-alert">Aguardando dados...</p>
+
+                </article>
+
+
+                <article class="sensor-card">
+
+                    <div class="sensor-top">
+                        <div class="sensor-icon air">🌫️</div>
+                        <span>QUALIDADE</span>
+                    </div>
+
+                    <h3>Qualidade do Ar</h3>
+
+                    <div class="sensor-value">
+                        <span id="air">--</span>
+                    </div>
+
+                    <p id="air-alert">Aguardando dados...</p>
+
+                </article>
+
+            </div>
+
+
+            <div class="connection-card">
+
+                <div>
+                    <span class="mini-label">CONEXÃO MQTT</span>
+                    <h3>Broker Mosquitto</h3>
+                </div>
+
+                <div class="connection-info">
+                    <span id="mqtt-status">Aguardando conexão...</span>
+                </div>
+
+            </div>
+
+
+            <!-- SENHA -->
+            <div class="password-card">
+
+                <div>
+                    <span class="mini-label">ACESSO DO GRUPO</span>
+                    <h3>Senha do grupo</h3>
+                    <p>
+                        A senha fornecida pelo professor é armazenada
+                        localmente neste navegador.
+                    </p>
+                </div>
+
+                <div class="password-form">
+                    <input
+                        type="password"
+                        id="groupPassword"
+                        placeholder="Digite a senha"
+                    >
+
+                    <button onclick="salvarSenha()">
+                        Salvar
+                    </button>
+                </div>
+
+                <span id="password-message"></span>
+
+            </div>
+
+
+            <div class="project-banner">
+                Projeto IOT SESI SENAI Valinhos Grupo 5
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+        <p>
+            Grupo 5 • SESI SENAI Valinhos • Projeto de IoT
+        </p>
+
+        <p>
+            Melissa Freitas • Manuela Freitas • Jennifer Silva • Nathalia Reis
+            • Maria Eduarda • Ana Júlia • Maria Clara
+        </p>
+    </footer>
+
+
+    <script src="index.js"></script>
+
+</body>
+</html>
